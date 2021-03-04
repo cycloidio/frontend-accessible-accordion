@@ -11,8 +11,6 @@ export default defineComponent({
 	},
 
 	setup(props, { slots, attrs }) {
-		console.log(attrs);
-
 		const active_indexes = inject('active_indexes', ref(0));
 		const header_tag = inject('header_tag');
 		const collapsible = inject('collapsible');
@@ -98,6 +96,9 @@ export default defineComponent({
 							onClick: handle_click,
 							onKeydown: handle_keydown,
 						},
+						h('span', {
+							class: 'accordion-icon',
+						}),
 						slots.default ? slots.default({ isActive: is_active }) : ['Panel Toggle'],
 					),
 				),
