@@ -105,6 +105,7 @@ module.exports = {
         ]
       }
     ],
+    'no-unused-expressions': 'off',
     /** https://github.com/vuejs/eslint-plugin-vue/blob/master/docs/rules/component-name-in-template-casing.md */
     'vue/component-name-in-template-casing': [
       'error',
