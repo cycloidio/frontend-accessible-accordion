@@ -1,15 +1,15 @@
 <template>
+	<Hibou class="logo" height="32" width="32" />
 	<div class="container">
-		<accordion class="accordion" :collapsible="false" :expandable="false">
+		<accordion class="accordion" :collapsible="false" :expandable="true">
 			<accordion-panel id="personalInfo">
 				<accordion-panel-header v-slot="{ isActive }">
 					<span :class="[{ 'font-weight-bold': isActive }, 'accordion-title']">Personal Information</span>
 				</accordion-panel-header>
 				<accordion-panel-content>
-					<p><input type="text" placeholder="Name" /></p>
-					<p><input type="text" placeholder="Email" /></p>
-					<p><input type="text" placeholder="Phone" /></p>
-					<p><input type="text" placeholder="Country" /></p>
+					<p><input v-model="personalInfo.name" type="text" placeholder="Name" /></p>
+					<p><input v-model="personalInfo.email" type="text" placeholder="Email" /></p>
+					<p><input v-model="personalInfo.phone" type="text" placeholder="Phone" /></p>
 				</accordion-panel-content>
 			</accordion-panel>
 
@@ -22,8 +22,20 @@
 						<p><input v-model="billing.address" type="text" placeholder="Address" /></p>
 						<p><input v-model="billing.city" type="text" placeholder="City" /></p>
 						<p><input v-model="billing.zipCode" type="text" placeholder="Zip Code" /></p>
+						<p><input v-model="billing.country" type="text" placeholder="Country" /></p>
 					</fieldset>
-					<button class="button" @click.stop="clearAllInputs(billing)">Clear Billing Info</button>
+				</accordion-panel-content>
+			</accordion-panel>
+			<accordion-panel id="billingAddress">
+				<accordion-panel-header>
+					<span class="accordion-title">Summary</span>
+				</accordion-panel-header>
+				<accordion-panel-content>
+					<p>Thank you for filling in the form.</p>
+					<button class="button button--red" @click="clearInputs(billing, personalInfo)">
+						Clear
+					</button>
+					<button class="button" @click="submit(billing, personalInfo, $toast)">Submit</button>
 				</accordion-panel-content>
 			</accordion-panel>
 		</accordion>
@@ -32,26 +44,55 @@
 
 <script>
 import { ref } from 'vue';
+import Hibou from './Hibou';
+
 export default {
 	name: 'App',
-
+	components: {
+		Hibou,
+	},
 	setup() {
 		const active_panel = ref([0]);
+		const personalInfo = ref({
+			name: '',
+			email: '',
+			phone: '',
+		});
+
 		const billing = ref({
 			address: '',
 			city: '',
 			zipCode: '',
+			country: '',
 		});
 
-		const clearAllInputs = inputsGroup =>
-			Object.keys(inputsGroup).forEach(input => {
-				inputsGroup[input] = '';
+		const clearInputs = (...inputGroups) => {
+			inputGroups.forEach(inputGroup => {
+				Object.keys(inputGroup).forEach(input => {
+					inputGroup[input] = '';
+				});
 			});
+		};
 
+		const validate = (...inputGroups) =>
+			inputGroups.reduce((acc, inputGroup) => Object.values(inputGroup).every(input => !!input) && acc, true);
+
+		const submit = (billing, personalInfo, toast) => {
+			validate(billing, personalInfo)
+				? toast('Form submitted successfully! 🎉')
+				: toast(`Oh no, an issue! 🥺`, {
+						styles: {
+							backgroundColor: '#E6213C',
+						},
+				  });
+		};
 		return {
 			active_panel,
 			billing,
-			clearAllInputs,
+			clearInputs,
+			personalInfo,
+			validate,
+			submit,
 		};
 	},
 };
@@ -59,26 +100,39 @@ export default {
 
 <style lang="scss">
 $white: #ffffff;
-$teal: #1c9797;
-$teal-light: #d2eaea;
+$primary: #131a25;
+$primary-light: #253449;
+$secondary: #1c9797;
+$secondary-light: #d2eaea;
+$error: #e6213c;
+$error-light: #f07a8a;
 
-.container {
+html,
+body {
+	height: 100%;
+	margin: 0;
+}
+
+#app {
+	min-height: 100%;
 	font-family: 'Montserrat', sans-serif;
-	height: 100vh;
-	width: 100vw;
 	display: flex;
 	justify-content: center;
 	align-items: center;
 }
+.container {
+	margin: 8px 0;
+}
 
 .accordion {
-	margin: 0;
+	margin: 8px;
 	padding: 0;
-	border: 2px solid $teal;
+	border: 2px solid $secondary;
 	border-radius: 7px;
 	width: 20em;
 
 	&__panel-content {
+		color: $primary;
 		margin: 0;
 		padding: 1em 1.5em;
 	}
@@ -97,15 +151,15 @@ $teal-light: #d2eaea;
 
 		&.is-active {
 			.accordion__panel-header {
-				border-bottom: 1px solid $teal;
+				border-bottom: 1px solid $secondary;
 			}
 		}
 	}
 
 	&__panel-header-toggle {
+		color: $primary;
 		border-style: none;
 		background: none;
-		color: hsl(0, 0%, 13%);
 		display: block;
 		font-size: 1rem;
 		font-weight: normal;
@@ -118,11 +172,11 @@ $teal-light: #d2eaea;
 
 		&:hover,
 		&:focus {
-			background: $teal-light;
+			background: $secondary-light;
 
 			.accordion-icon,
 			.accordion-title {
-				border-color: $teal;
+				border-color: $secondary;
 			}
 		}
 
@@ -143,7 +197,7 @@ $teal-light: #d2eaea;
 	}
 
 	&:focus {
-		border-color: $teal;
+		border-color: $secondary;
 
 		h3 {
 			background-color: hsl(0, 0%, 97%);
@@ -152,7 +206,7 @@ $teal-light: #d2eaea;
 }
 
 .accordion > * + * {
-	border-top: 1px solid $teal;
+	border-top: 1px solid $secondary;
 }
 
 .accordion-title {
@@ -165,7 +219,7 @@ $teal-light: #d2eaea;
 }
 
 .accordion-icon {
-	border: solid hsl(0, 0%, 62%);
+	border: solid $primary;
 	border-width: 0 2px 2px 0;
 	height: 0.5rem;
 	pointer-events: none;
@@ -190,27 +244,54 @@ input {
 	padding: 0.3em 0.5em;
 
 	&:focus {
-		border: 1px solid $teal;
+		border: 1px solid $secondary;
 		outline: none !important;
 	}
 }
 
 .button {
 	margin-top: 16px;
+	margin-right: 8px;
 	min-width: auto;
 	height: 32px;
 	padding: 0 16px;
 	font-size: 14px;
 	font-weight: 400;
 	border-radius: 4px;
-	color: $teal;
-	border: 1px solid $teal;
+	color: $secondary;
+	border: 1px solid $secondary;
 	background-color: $white;
 	transition: all 150ms ease;
 	outline: none !important;
 
 	&:hover {
-		background-color: $teal-light;
+		background-color: $secondary-light;
 	}
+
+	&--red {
+		color: $error;
+		border: 1px solid $error;
+
+		&:hover {
+			background-color: $error-light;
+		}
+	}
+}
+
+.dk {
+	&__toast-section {
+		grid-area: top-center !important;
+		justify-content: flex-start !important;
+	}
+
+	&__toast {
+		padding: 8px 16px !important;
+	}
+}
+
+.logo {
+	position: absolute;
+	top: 8px;
+	left: 8px;
 }
 </style>
