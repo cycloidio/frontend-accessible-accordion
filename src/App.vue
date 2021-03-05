@@ -4,34 +4,78 @@
 		<accordion class="accordion" :collapsible="false" :expandable="true">
 			<accordion-panel id="personalInfo">
 				<accordion-panel-header v-slot="{ isActive }">
-					<span :class="[{ 'font-weight-bold': isActive }, 'accordion-title']">Personal Information</span>
+					<span :class="[{ 'font-weight-bold': isActive }, 'accordion__title']">Personal Information</span>
 				</accordion-panel-header>
 				<accordion-panel-content>
-					<p><input v-model="personalInfo.name" type="text" placeholder="Name" /></p>
-					<p><input v-model="personalInfo.email" type="text" placeholder="Email" /></p>
-					<p><input v-model="personalInfo.phone" type="text" placeholder="Phone" /></p>
+					<fieldset class="accordion__input-group">
+						<p>
+							<input
+								class="accordion__input"
+								v-model="personalInfo.name"
+								type="text"
+								placeholder="Name"
+							/>
+						</p>
+						<p>
+							<input
+								class="accordion__input"
+								v-model="personalInfo.email"
+								type="text"
+								placeholder="Email"
+							/>
+						</p>
+						<p>
+							<input
+								class="accordion__input"
+								v-model="personalInfo.phone"
+								type="text"
+								placeholder="Phone"
+							/>
+						</p>
+					</fieldset>
 				</accordion-panel-content>
 			</accordion-panel>
 
 			<accordion-panel id="billingAddress">
 				<accordion-panel-header>
-					<span class="accordion-title">Billing Address</span>
+					<span class="accordion__title">Billing Address</span>
 				</accordion-panel-header>
 				<accordion-panel-content>
-					<fieldset>
-						<p><input v-model="billing.address" type="text" placeholder="Address" /></p>
-						<p><input v-model="billing.city" type="text" placeholder="City" /></p>
-						<p><input v-model="billing.zipCode" type="text" placeholder="Zip Code" /></p>
-						<p><input v-model="billing.country" type="text" placeholder="Country" /></p>
+					<fieldset class="accordion__input-group">
+						<p>
+							<input
+								class="accordion__input"
+								v-model="billing.address"
+								type="text"
+								placeholder="Address"
+							/>
+						</p>
+						<p><input class="accordion__input" v-model="billing.city" type="text" placeholder="City" /></p>
+						<p>
+							<input
+								class="accordion__input"
+								v-model="billing.zipCode"
+								type="text"
+								placeholder="Zip Code"
+							/>
+						</p>
+						<p>
+							<input
+								class="accordion__input"
+								v-model="billing.country"
+								type="text"
+								placeholder="Country"
+							/>
+						</p>
 					</fieldset>
 				</accordion-panel-content>
 			</accordion-panel>
 			<accordion-panel id="billingAddress">
 				<accordion-panel-header>
-					<span class="accordion-title">Summary</span>
+					<span class="accordion__title">Summary</span>
 				</accordion-panel-header>
 				<accordion-panel-content>
-					<p>Thank you for filling in the form.</p>
+					<p>Thank you for filling in the form. You can now submit or clear to start over from scratch.</p>
 					<button class="button button--red" @click="clearInputs(billing, personalInfo)">
 						Clear
 					</button>
@@ -120,12 +164,13 @@ body {
 	justify-content: center;
 	align-items: center;
 }
+
 .container {
 	margin: 8px 0;
 }
 
 .accordion {
-	margin: 8px;
+	margin: 0;
 	padding: 0;
 	border: 2px solid $secondary;
 	border-radius: 7px;
@@ -135,11 +180,6 @@ body {
 		color: $primary;
 		margin: 0;
 		padding: 1em 1.5em;
-	}
-
-	/* For Edge bug https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/4806035/ */
-	&__panel[hidden] {
-		display: none;
 	}
 
 	&__panel {
@@ -153,6 +193,11 @@ body {
 			.accordion__panel-header {
 				border-bottom: 1px solid $secondary;
 			}
+		}
+
+		/* For Edge bug https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/4806035/ */
+		&[hidden] {
+			display: none;
 		}
 	}
 
@@ -174,14 +219,14 @@ body {
 		&:focus {
 			background: $secondary-light;
 
-			.accordion-icon,
-			.accordion-title {
+			.accordion__icon,
+			.accordion__title {
 				border-color: $secondary;
 			}
 		}
 
 		&[aria-expanded='true'] {
-			.accordion-icon {
+			.accordion__icon {
 				transform: translateY(-50%) rotate(-135deg);
 			}
 		}
@@ -191,7 +236,7 @@ body {
 		}
 	}
 
-	h3 {
+	&__panel-header-heading {
 		margin: 0;
 		padding: 0;
 	}
@@ -199,54 +244,56 @@ body {
 	&:focus {
 		border-color: $secondary;
 
-		h3 {
+		&__panel-header-heading {
 			background-color: hsl(0, 0%, 97%);
 		}
+	}
+
+	&__input-group {
+		border: 0;
+		margin: 0;
+		padding: 0;
+	}
+
+	&__input {
+		box-sizing: border-box;
+		border: 1px solid hsl(0, 0%, 62%);
+		border-radius: 0.3em;
+		display: block;
+		font-size: inherit;
+		padding: 0.3em 0.5em;
+		width: 100%;
+
+		&:focus {
+			border: 1px solid $secondary;
+			outline: none !important;
+		}
+	}
+
+	&__icon {
+		border: solid $primary;
+		border-width: 0 2px 2px 0;
+		height: 0.5rem;
+		pointer-events: none;
+		position: absolute;
+		right: 2em;
+		top: 50%;
+		transform: translateY(-60%) rotate(45deg);
+		width: 0.5rem;
+	}
+
+	&__title {
+		display: block;
+		pointer-events: none;
+		border: transparent 2px solid;
+		border-radius: 5px;
+		padding: 0.25em;
+		outline: none;
 	}
 }
 
 .accordion > * + * {
 	border-top: 1px solid $secondary;
-}
-
-.accordion-title {
-	display: block;
-	pointer-events: none;
-	border: transparent 2px solid;
-	border-radius: 5px;
-	padding: 0.25em;
-	outline: none;
-}
-
-.accordion-icon {
-	border: solid $primary;
-	border-width: 0 2px 2px 0;
-	height: 0.5rem;
-	pointer-events: none;
-	position: absolute;
-	right: 2em;
-	top: 50%;
-	transform: translateY(-60%) rotate(45deg);
-	width: 0.5rem;
-}
-
-fieldset {
-	border: 0;
-	margin: 0;
-	padding: 0;
-}
-
-input {
-	border: 1px solid hsl(0, 0%, 62%);
-	border-radius: 0.3em;
-	display: block;
-	font-size: inherit;
-	padding: 0.3em 0.5em;
-
-	&:focus {
-		border: 1px solid $secondary;
-		outline: none !important;
-	}
 }
 
 .button {
@@ -274,23 +321,20 @@ input {
 
 		&:hover {
 			background-color: $error-light;
+			color: $white;
 		}
 	}
 }
 
 .dk {
-	&__toast-section {
-		grid-area: top-center !important;
-		justify-content: flex-start !important;
-	}
-
-	&__toast {
-		padding: 8px 16px !important;
+	&__toast-container {
+		padding: 4px !important;
+		width: calc(100vw - 24px) !important;
 	}
 }
 
 .logo {
-	position: absolute;
+	position: fixed;
 	top: 8px;
 	left: 8px;
 }

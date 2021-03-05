@@ -97,7 +97,7 @@ export default defineComponent({
 							onKeydown: handle_keydown,
 						},
 						h('span', {
-							class: 'accordion-icon',
+							class: 'accordion__icon',
 						}),
 						slots.default ? slots.default({ isActive: is_active }) : ['Panel Toggle'],
 					),
