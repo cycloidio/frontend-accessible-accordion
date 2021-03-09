@@ -1,60 +1,60 @@
-import { defineComponent, h, inject, onMounted, ref, watch } from 'vue';
-import { focusable_elements } from '@/utils';
+import { defineComponent, h, inject, onMounted, ref, watch } from 'vue'
+import { focusableElements } from '@/utils'
 
 export default defineComponent({
-	name: 'accordion-panel-content',
+  name: 'accordion-panel-content',
 
-	props: {
-		index: { type: Number, required: true },
-		panel_id: { type: String, required: true },
-	},
+  props: {
+    index: { type: Number, required: true },
+    panel_id: { type: String, required: true }
+  },
 
-	setup(props, { slots, attrs }) {
-		const active_indexes = inject('active_indexes', ref(0));
-		const panel_ref = ref();
+  setup (props, { slots, attrs }) {
+    const activeIndexes = inject('activeIndexes', ref(0))
+    const panelRef = ref()
 
-		const set_negative_tabindex_on_focusable_children = () => {
-			const focusable_elements_in_panel = panel_ref.value.querySelectorAll(focusable_elements);
+    const setNegativeTabindexOnFocusableChildren = () => {
+      const focusableElementsInPanel = panelRef.value.querySelectorAll(focusableElements)
 
-			Array.from(focusable_elements_in_panel).forEach(el => el.setAttribute('tabindex', '-1'));
-		};
+      Array.from(focusableElementsInPanel).forEach((el) => el.setAttribute('tabindex', '-1'))
+    }
 
-		const restore_tabindex_on_focusable_children = () => {
-			const previously_focusable_elements_in_panel = panel_ref.value.querySelectorAll('[tabindex="-1"]');
+    const restoreTabindexOnFocusableChildren = () => {
+      const previouslyFocusableElementsInPanel = panelRef.value.querySelectorAll('[tabindex="-1"]')
 
-			Array.from(previously_focusable_elements_in_panel).forEach(el => el.setAttribute('tabindex', '0'));
-		};
+      Array.from(previouslyFocusableElementsInPanel).forEach((el) => el.setAttribute('tabindex', '0'))
+    }
 
-		onMounted(() => {
-			if (!active_indexes.value.includes(props.index) && panel_ref.value) {
-				set_negative_tabindex_on_focusable_children();
-			}
-		});
+    onMounted(() => {
+      if (!activeIndexes.value.includes(props.index) && panelRef.value) {
+        setNegativeTabindexOnFocusableChildren()
+      }
+    })
 
-		watch(
-			() => active_indexes.value,
-			(newval, oldval) => {
-				if (newval.includes(props.index)) {
-					restore_tabindex_on_focusable_children();
-				} else if (oldval.includes(props.index)) {
-					set_negative_tabindex_on_focusable_children();
-				}
-			},
-		);
+    watch(
+      () => activeIndexes.value,
+      (newValue, oldValue) => {
+        if (newValue.includes(props.index)) {
+          restoreTabindexOnFocusableChildren()
+        } else if (oldValue.includes(props.index)) {
+          setNegativeTabindexOnFocusableChildren()
+        }
+      }
+    )
 
-		return () =>
-			h(
-				'div',
-				{
-					...attrs,
-					class: ['accordion__panel-content', attrs.class || ''].join(' ').trim(),
-					hidden: !active_indexes.value.includes(props.index),
-					role: 'region',
-					'aria-labelledby': `${props.panel_id}-toggle`,
-					id: `${props.panel_id}-content`,
-					ref: panel_ref,
-				},
-				slots.default ? slots.default() : [],
-			);
-	},
-});
+    return () =>
+      h(
+        'div',
+        {
+          ...attrs,
+          class: ['accordion__panel-content', attrs.class || ''].join(' ').trim(),
+          hidden: !activeIndexes.value.includes(props.index),
+          role: 'region',
+          'aria-labelledby': `${props.panel_id}-toggle`,
+          id: `${props.panel_id}-content`,
+          ref: panelRef
+        },
+        slots.default ? slots.default() : []
+      )
+  }
+})

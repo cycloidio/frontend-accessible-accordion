@@ -1,1 +1,1 @@
-export const focusable_elements = ['a', 'button', 'input', 'textarea', 'select', 'details', '[tabindex]:not([tabindex="-1"])'];
+export const focusableElements = ['a', 'button', 'input', 'textarea', 'select', 'details', '[tabindex]:not([tabindex="-1"])']
